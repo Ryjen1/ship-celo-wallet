@@ -1,0 +1,79 @@
+#root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.app-root {
+  max-width: 720px;
+  width: 100%;
+}
+
+.app-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.app-topbar {
+  margin-bottom: 1.5rem;
+}
+
+.wallet-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  background: radial-gradient(circle at top left, #1b2430, #0b1015 60%);
+}
+
+.connector-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-text {
+  margin-top: 1rem;
+  color: #ff6b6b;
+}
+
+.wallet-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wallet-status-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wallet-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+}
+
+.pill-connected {
+  background: rgba(46, 213, 115, 0.18);
+}
+
+.pill-chain {
+  background: rgba(100, 108, 255, 0.2);
+}
+
+.warning-text {
+  font-size: 0.85rem;
+  color: #ffd166;
+}
