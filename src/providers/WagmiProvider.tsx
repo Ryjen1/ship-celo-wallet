@@ -9,7 +9,6 @@ import { celo, celoAlfajores } from '../config/celoChains'
 const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined
 
 if (!WALLETCONNECT_PROJECT_ID) {
-  // eslint-disable-next-line no-console
   console.warn('VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.')
 }
 
