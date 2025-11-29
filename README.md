@@ -338,6 +338,106 @@ When reporting issues, please include:
 - Complete error messages
 - Steps to reproduce the issue
 
+## Development Workflow
+
+Here's a recommended workflow for developing with this starter kit:
+
+### Daily Development Process
+
+1. **Start your development session**:
+   ```bash
+   # Ensure you're on the latest main branch
+   git pull origin main
+   
+   # Create a new feature branch
+   git checkout -b feature/your-feature-name
+   
+   # Start the development server
+   npm run dev
+   ```
+
+2. **Code Quality Checks** (run these frequently):
+   ```bash
+   # Type checking
+   npm run type-check
+   
+   # Linting
+   npm run lint
+   
+   # Format code
+   npm run format
+   ```
+
+3. **Testing** (run tests before committing):
+   ```bash
+   # Run tests in watch mode during development
+   npm test
+   
+   # Or run tests once before committing
+   npm run test:run
+   ```
+
+### Before Committing
+
+Always run these checks before committing your code:
+
+```bash
+# 1. Type check
+npm run type-check
+
+# 2. Lint and fix issues
+npm run lint:fix
+
+# 3. Run all tests
+npm run test:run
+
+# 4. Build to ensure no production issues
+npm run build
+```
+
+### Code Style Guidelines
+
+This project uses:
+- **ESLint** for code quality and consistency
+- **Prettier** for code formatting
+- **TypeScript** for type safety
+
+**Best Practices**:
+- Use TypeScript types for all props and function parameters
+- Follow React functional component patterns
+- Use Wagmi hooks for blockchain interactions
+- Write tests for new components and functionality
+- Keep components focused and reusable
+
+### Environment Management
+
+**Development vs Production**:
+- Development uses `npm run dev` with hot reloading
+- Production builds use `npm run build` for optimized bundles
+- Test environment uses mocked blockchain data
+
+**Wallet Testing**:
+- Test wallet connections using browser developer tools
+- Use Alfajores testnet for safe testing (no real funds)
+- Clear browser wallet data between tests to avoid state issues
+
+### Git Workflow
+
+1. **Feature Development**:
+   ```bash
+   git checkout -b feature/wallet-improvements
+   # Make changes
+   git add .
+   git commit -m "feat: improve wallet connection UX"
+   git push origin feature/wallet-improvements
+   ```
+
+2. **Before Pull Request**:
+   - Run all quality checks (`npm run lint:fix`, `npm run type-check`, `npm run test:run`)
+   - Ensure build passes (`npm run build`)
+   - Update documentation if needed
+   - Write clear commit messages following [conventional commits](https://www.conventionalcommits.org/)
+
 ## What you get
 
 - **WalletConnect + Injected connectors** via Wagmi
