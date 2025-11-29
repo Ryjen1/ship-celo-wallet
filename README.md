@@ -102,6 +102,23 @@ You should see output similar to:
 
 Open your browser and navigate to `http://localhost:5173/` to see your application running.
 
+## Available Scripts
+
+Here are the scripts you can run in this project:
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint to check code quality |
+| `npm run lint:fix` | Fix linting issues automatically |
+| `npm run format` | Format code with Prettier |
+| `npm run type-check` | Run TypeScript type checking |
+| `npm test` | Run tests in watch mode |
+| `npm run test:ui` | Run tests with interactive UI |
+| `npm run test:run` | Run tests once and exit |
+
 ## What you get
 
 - **WalletConnect + Injected connectors** via Wagmi
