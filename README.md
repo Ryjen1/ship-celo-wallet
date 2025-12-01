@@ -11,6 +11,15 @@ A starter kit for building Celo dApps with:
 
 This project is designed to be forked and extended, especially for the Proof-of-Ship program.
 
+## 📚 Documentation Guide
+
+We now provide comprehensive documentation to help you get started quickly:
+
+- **[Quick Start Guide](QUICK_START.md)** - Get up and running in 5 minutes
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Solutions for common issues
+- **[Setup Guide](SETUP_GUIDE.md)** - Detailed step-by-step instructions for beginners
+- **This README** - Complete project documentation and architecture
+
 ## System Requirements
 
 Before you begin, ensure your development environment meets these requirements:
@@ -194,11 +203,10 @@ pnpm install
 Create a `.env` file in the project root and add your WalletConnect project ID:
 
 ```bash
-# Copy the example environment file (if available)
+# Copy the example environment file (recommended)
 cp .env.example .env
 
-# Or create a new .env file
-touch .env
+# Then edit .env and replace the placeholder with your actual Project ID
 ```
 
 Add the following content to your `.env` file:
