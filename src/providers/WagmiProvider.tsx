@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider as BaseWagmiProvider, createConfig, http } from 'wagmi';
 import { injected } from 'wagmi/connectors';
@@ -9,6 +9,7 @@ import { celo, celoAlfajores } from '../config/celoChains';
 const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
 
 if (!WALLETCONNECT_PROJECT_ID) {
+  // eslint-disable-next-line no-console
   console.warn('VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.');
 }
 
@@ -37,9 +38,9 @@ const wagmiConfig = createConfig({
         url: 'https://example.com',
         icons: ['https://walletconnect.com/walletconnect-logo.png']
       }
-    }),
+    })
   ]
-});;
+});
 
 export function WagmiProvider({ children }: PropsWithChildren): JSX.Element {
   return (
