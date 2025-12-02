@@ -25,6 +25,9 @@ export function useCeloNetwork() {
     const target = chains.find((c) => c.id === celoMainnet.id);
     if (target && switchChain) {
       switchChain({ chainId: target.id });
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('Celo mainnet not available in current wallet or switchChain not supported');
     }
   }, [chains, switchChain, celoMainnet.id]);
 
@@ -32,6 +35,9 @@ export function useCeloNetwork() {
     const target = chains.find((c) => c.id === alfajores.id);
     if (target && switchChain) {
       switchChain({ chainId: target.id });
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('Alfajores testnet not available in current wallet or switchChain not supported');
     }
   }, [chains, switchChain, alfajores.id]);
 
