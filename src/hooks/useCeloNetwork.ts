@@ -1,39 +1,39 @@
-import { useCallback, useMemo } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { celo, celoAlfajores } from '../config/celoChains'
+import { useCallback, useMemo } from 'react';
+import { useChainId, useSwitchChain } from 'wagmi';
+import { celo, celoAlfajores } from '../config/celoChains';
 
-const CELO_CHAINS = [celoAlfajores, celo] as const
+const CELO_CHAINS = [celoAlfajores, celo] as const;
 
 export function useCeloNetwork() {
-  const activeChainId = useChainId()
-  const { chains, switchChain, isPending, status, error } = useSwitchChain()
+  const activeChainId = useChainId();
+  const { chains, switchChain, isPending, status, error } = useSwitchChain();
 
   const isSupported = useMemo(
     () => CELO_CHAINS.some((chain) => chain.id === activeChainId),
-    [activeChainId],
-  )
+    [activeChainId]
+  );
 
   const activeChain = useMemo(
     () => CELO_CHAINS.find((chain) => chain.id === activeChainId) ?? null,
-    [activeChainId],
-  )
+    [activeChainId]
+  );
 
-  const celoMainnet = celo
-  const alfajores = celoAlfajores
+  const celoMainnet = celo;
+  const alfajores = celoAlfajores;
 
   const switchToCelo = useCallback(() => {
-    const target = chains.find((c) => c.id === celoMainnet.id)
+    const target = chains.find((c) => c.id === celoMainnet.id);
     if (target && switchChain) {
-      switchChain({ chainId: target.id })
+      switchChain({ chainId: target.id });
     }
-  }, [chains, switchChain, celoMainnet.id])
+  }, [chains, switchChain, celoMainnet.id]);
 
   const switchToAlfajores = useCallback(() => {
-    const target = chains.find((c) => c.id === alfajores.id)
+    const target = chains.find((c) => c.id === alfajores.id);
     if (target && switchChain) {
-      switchChain({ chainId: target.id })
+      switchChain({ chainId: target.id });
     }
-  }, [chains, switchChain, alfajores.id])
+  }, [chains, switchChain, alfajores.id]);
 
   return {
     activeChainId,
@@ -45,6 +45,6 @@ export function useCeloNetwork() {
     switchToAlfajores,
     isSwitching: isPending,
     status,
-    error,
-  }
+    error
+  };
 }
