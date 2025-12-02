@@ -8,9 +8,15 @@ import { celo, celoAlfajores } from '../config/celoChains';
 // TODO: replace with your own WalletConnect project ID via env
 const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
 
+// Log configuration status for debugging
+const _isWalletConnectConfigured = Boolean(WALLETCONNECT_PROJECT_ID);
+
 if (!WALLETCONNECT_PROJECT_ID) {
   // eslint-disable-next-line no-console
   console.warn('VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.');
+} else {
+  // eslint-disable-next-line no-console
+  console.info('WagmiProvider initialized with WalletConnect support');
 }
 
 const queryClient = new QueryClient();
