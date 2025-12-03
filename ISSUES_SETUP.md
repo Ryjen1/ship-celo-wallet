@@ -1,44 +1,32 @@
-# Automated GitHub Issues Setup Guide
+# GitHub Issues Setup Guide
 
-This guide explains how to set up and use the automated GitHub issue creation system for the Celo Wallet Starter Kit project.
+This guide explains how to set up and use the GitHub issue creation system for the Celo Wallet Starter Kit project.
 
 ## 🎯 Overview
 
-The automated issue system includes:
+The issue management system includes:
 
 - **GitHub Issue Templates** - Pre-defined templates for different types of issues
-- **GitHub Actions Workflow** - Automatically creates issues based on commit messages, failed tests, and security advisories
 - **CLI Script** - Programmatically create issues from the command line
 - **Interactive Mode** - Step-by-step issue creation wizard
+- **NPM Scripts** - Convenient commands for creating issues
 
 ## 🚀 Quick Start
 
 ### 1. Repository Setup
 
-1. **Enable GitHub Actions** in your repository:
-   - Go to `Settings > Actions` in your GitHub repository
-   - Enable "Allow all actions and reusable workflows"
+**Issue templates are automatically enabled** - When someone visits your GitHub repository and clicks "New issue", they'll see the templates you created.
 
-2. **Configure Issue Labels** (optional but recommended):
-   ```
-   bug (red) - 🐛
-   enhancement (yellow) - ✨  
-   documentation (blue) - 📚
-   needs-triage (orange) - 🔍
-   high-priority (red) - 🔥
-   security (purple) - 🔒
-   auto-created (gray) - 🤖
-   ```
+### 2. Configure Labels (Optional)
 
-### 2. Environment Variables
+GitHub will automatically apply labels based on the template used, but you can also manually configure additional labels:
 
-Set up these environment variables in your GitHub repository or local environment:
-
-```bash
-# For GitHub Actions (repository secrets)
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-GITHUB_OWNER=your-username-or-org
-GITHUB_REPO=your-repository-name
+```
+bug (red) - 🐛
+enhancement (yellow) - ✨  
+documentation (blue) - 📚
+needs-triage (orange) - 🔍
+high-priority (red) - 🔥
 ```
 
 ## 📋 Issue Templates
@@ -65,11 +53,17 @@ The system includes 4 pre-built issue templates:
 - **Labels**: `documentation`, `needs-triage`
 - **Use for**: Documentation issues, missing guides, unclear explanations
 
-## 🤖 Automated Issue Creation
+## 🤖 Issue Templates (Manual Creation)
 
-### Commit Message Based Creation
+### Using GitHub's Built-in Templates
 
-The system automatically creates issues when you use special prefixes in your commit messages:
+GitHub provides built-in support for issue templates. When someone creates a new issue on your repository, they'll see options for:
+- Bug report
+- Feature request  
+- Documentation
+- Enhancement
+
+These templates are stored in `.github/ISSUE_TEMPLATE/` and provide structured forms for creating quality issues.
 
 ```bash
 # Creates a bug report
