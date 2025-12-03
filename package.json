@@ -23,7 +23,9 @@
     "create:bug": "node scripts/create-issue.js --type bug",
     "create:feature": "node scripts/create-issue.js --type feature",
     "create:docs": "node scripts/create-issue.js --type documentation",
-    "create:enhancement": "node scripts/create-issue.js --type enhancement"
+    "create:enhancement": "node scripts/create-issue.js --type enhancement",
+    "setup:auto-issues": "node scripts/setup-auto-issues.js",
+    "test:auto-issues": "node scripts/pre-push-hook.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.10",

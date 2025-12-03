@@ -7,6 +7,7 @@ This guide explains how to set up and use the GitHub issue creation system for t
 The issue management system includes:
 
 - **GitHub Issue Templates** - Pre-defined templates for different types of issues
+- **Pre-Push Hook** - Automatically creates issues when you push commits with special prefixes
 - **CLI Script** - Programmatically create issues from the command line
 - **Interactive Mode** - Step-by-step issue creation wizard
 - **NPM Scripts** - Convenient commands for creating issues
@@ -93,6 +94,77 @@ Security-related commits are automatically flagged:
 git commit -m "[SECURITY] Fix XSS vulnerability in wallet component"
 git commit -m "[SECURITY-FIX] Update vulnerable dependencies"
 ```
+
+## 🤖 Automatic Issue Creation
+
+### Setup Automatic Issues
+
+The system includes a pre-push hook that automatically creates issues when you push commits with special prefixes:
+
+```bash
+# Run the setup script
+npm run setup:auto-issues
+```
+
+This installs a git hook that runs before each push and creates issues automatically.
+
+### Commit Message Based Creation
+
+When you use special prefixes in your commit messages, issues are automatically created when you push:
+
+```bash
+# Creates a bug report
+git commit -m "[BUG] Wallet connection fails on mobile devices"
+
+# Creates a feature request
+git commit -m "[FEATURE] Add transaction history display"
+
+# Creates a documentation issue
+git commit -m "[DOCS] Update setup instructions for Windows"
+
+# Creates a generic task
+git commit -m "[TODO] Refactor wallet connection logic"
+
+# Push to GitHub - triggers automatic issue creation
+git push origin main
+```
+
+### Supported Prefixes
+
+- `[BUG]` - Creates bug report with `bug`, `needs-triage` labels
+- `[FEATURE]` - Creates feature request with `enhancement`, `needs-triage` labels
+- `[ENHANCEMENT]` - Creates enhancement request with `enhancement`, `needs-triage` labels
+- `[DOCS]` - Creates documentation issue with `documentation`, `needs-triage` labels
+- `[TODO]` - Creates task with `task`, `needs-triage` labels
+- `[SECURITY]` - Creates security issue with `security`, `high-priority` labels
+
+### How It Works
+
+1. **Setup**: Run `npm run setup:auto-issues` to install the pre-push hook
+2. **Commit**: Use special prefixes in your commit messages
+3. **Push**: When you `git push`, the hook automatically:
+   - Scans your commits for issue prefixes
+   - Creates GitHub issues with proper labels
+   - Prevents duplicate issues
+   - Shows summary of created issues
+
+### Environment Setup
+
+To enable automatic issue creation, set these environment variables:
+
+```bash
+# Required: GitHub Personal Access Token (with repo scope)
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional: Repository details (defaults provided)
+export GITHUB_OWNER=your-github-username
+export GITHUB_REPO=ship-celo-wallet
+```
+
+**Getting a GitHub Token:**
+1. Go to GitHub → Settings → Developer settings → Personal access tokens
+2. Generate new token with "repo" scope
+3. Copy the token and set it as GITHUB_TOKEN
 
 ## 💻 CLI Script Usage
 
@@ -303,8 +375,9 @@ Use clear, descriptive commit messages with appropriate prefixes:
 
 This automated system provides:
 
+- **Fully Automatic** - Issues created automatically when you push commits
+- **Zero Manual Work** - No need to manually write issues on GitHub
 - **Consistency** - All issues follow same structure and quality
-- **Automation** - Less manual work for issue creation
 - **Traceability** - Issues linked to commits and branches
 - **Quality** - Structured templates ensure complete information
 - **Efficiency** - Faster issue creation and management
