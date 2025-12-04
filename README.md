@@ -24,7 +24,7 @@ We now provide comprehensive documentation to help you get started quickly:
 
 Before you begin, ensure your development environment meets these requirements:
 
-- **Node.js**: Version 18.x or 20.x (we recommend 20.x LTS)
+- **Node.js**: Version 20.x or higher (LTS recommended)
 - **npm**: Version 8 or higher (comes with Node.js)
 - **Git**: For cloning and version control
 - **Modern Web Browser**: Chrome, Firefox, Safari, or Edge (latest versions)
@@ -121,7 +121,7 @@ node --version
 Run these commands to verify your setup:
 
 ```bash
-# Check Node.js version (should be 18.x or 20.x)
+# Check Node.js version (should be 20.x or higher)
 node --version
 
 # Check npm version (should be 8 or higher)
@@ -714,7 +714,7 @@ npm config get prefix  # Check npm installation path
    npm --version
    ```
 
-2. **If using wrong version (not 18.x or 20.x):**
+2. **If using wrong version (not 20.x or higher):**
    
    **Option A: Reinstall Node.js**
    - Download correct version from [nodejs.org](https://nodejs.org/)

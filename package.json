@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -13,7 +17,15 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "create:issue": "node scripts/create-issue.js",
+    "create:issue:interactive": "node scripts/create-issue.js --interactive",
+    "create:bug": "node scripts/create-issue.js --type bug",
+    "create:feature": "node scripts/create-issue.js --type feature",
+    "create:docs": "node scripts/create-issue.js --type documentation",
+    "create:enhancement": "node scripts/create-issue.js --type enhancement",
+    "setup:auto-issues": "node scripts/setup-auto-issues.cjs",
+    "test:auto-issues": "node scripts/pre-push-hook.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.10",
