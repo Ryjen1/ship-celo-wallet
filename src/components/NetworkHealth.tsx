@@ -5,8 +5,38 @@ interface NetworkHealthProps {
   endpoints: RPCEndpoint[];
 }
 
+function formatErrorMessage(error: Error): string {
+  const message = error.message.toLowerCase();
+
+  if (message.includes('network') || message.includes('connection')) {
+    return 'Network connection error. Please check your internet connection and try again.';
+  }
+
+  if (message.includes('timeout')) {
+    return 'Request timed out. The network may be experiencing high congestion. Try refreshing or switching networks.';
+  }
+
+  if (message.includes('rpc') || message.includes('endpoint')) {
+    return 'RPC endpoint error. Some network endpoints may be temporarily unavailable. The system will automatically try alternative endpoints.';
+  }
+
+  if (message.includes('block') || message.includes('chain')) {
+    return 'Blockchain data error. Unable to retrieve current network information. This may be due to temporary node issues.';
+  }
+
+  if (message.includes('gas') || message.includes('price')) {
+    return 'Gas price retrieval failed. Transaction cost estimation may be unavailable.';
+  }
+
+  if (message.includes('fetch') || message.includes('request')) {
+    return 'Data fetch error. Network monitoring data could not be retrieved. Please check your connection.';
+  }
+
+  return 'An unexpected error occurred while monitoring network health. Please try again later or contact support if the issue persists.';
+}
+
 export function NetworkHealth({ endpoints }: NetworkHealthProps) {
-  const { data, loading, error } = useNetworkHealth({ endpoints, interval: 30000 });
+  const { data, loading, error } = useNetworkHealth({ endpoints, interval: 30000, cacheTimeout: 15000 });
 
   if (loading) {
     return (
@@ -23,7 +53,7 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
     return (
       <div className="wallet-card">
         <div className="error-state">
-          <p>Error loading network health: {error.message}</p>
+          <p>{formatErrorMessage(error)}</p>
         </div>
       </div>
     );
@@ -142,9 +172,12 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
         </div>
       </div>
 
-      {/* Last Updated */}
-      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>
-        Last updated: {lastUpdated.toLocaleString()}
+      {/* Cache and Last Updated */}
+      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginTop: '1rem' }}>
+        <div>Last updated: {lastUpdated.toLocaleString()}</div>
+        <div style={{ marginTop: '0.25rem' }}>
+          Data cached for {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s (refreshes every 30s)
+        </div>
       </div>
     </div>
   );
