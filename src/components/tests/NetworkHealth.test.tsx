@@ -4,7 +4,7 @@ import { NetworkHealth } from '../NetworkHealth';
 
 // Mock the useNetworkHealth hook
 vi.mock('../../hooks/useNetworkHealth', () => ({
-  useNetworkHealth: vi.fn(),
+  useNetworkHealth: vi.fn()
 }));
 
 import { useNetworkHealth } from '../../hooks/useNetworkHealth';
@@ -26,16 +26,16 @@ describe('NetworkHealth', () => {
           responseTime: 100,
           successRate: 100,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
-      },
+        isActive: true
+      }
     ];
 
     mockUseNetworkHealth = {
       data: null,
       loading: false,
-      error: null,
+      error: null
     };
 
     vi.mocked(useNetworkHealth).mockReturnValue(mockUseNetworkHealth);
@@ -75,10 +75,10 @@ describe('NetworkHealth', () => {
         gasPriceTrend: 'stable',
         connectedPeerCount: 10,
         lastBlockNumber: 12345678,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       rpcEndpoints: mockEndpoints,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     mockUseNetworkHealth.data = mockData;
@@ -110,15 +110,15 @@ describe('NetworkHealth', () => {
         gasPriceTrend: 'increasing',
         connectedPeerCount: 10,
         lastBlockNumber: 12345678,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       rpcEndpoints: [
         {
           ...mockEndpoints[0],
-          status: 'degraded',
-        },
+          status: 'degraded'
+        }
       ],
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     mockUseNetworkHealth.data = mockData;
@@ -143,15 +143,15 @@ describe('NetworkHealth', () => {
         gasPriceTrend: 'decreasing',
         connectedPeerCount: 10,
         lastBlockNumber: 12345678,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       rpcEndpoints: [
         {
           ...mockEndpoints[0],
-          status: 'down',
-        },
+          status: 'down'
+        }
       ],
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     mockUseNetworkHealth.data = mockData;
@@ -177,10 +177,10 @@ describe('NetworkHealth', () => {
         gasPriceTrend: 'stable',
         connectedPeerCount: 10,
         lastBlockNumber: 12345678,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       rpcEndpoints: mockEndpoints,
-      lastUpdated,
+      lastUpdated
     };
 
     mockUseNetworkHealth.data = mockData;
@@ -203,10 +203,10 @@ describe('NetworkHealth', () => {
         gasPriceTrend: 'stable',
         connectedPeerCount: 10,
         lastBlockNumber: 12345678,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
       rpcEndpoints: mockEndpoints,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     mockUseNetworkHealth.data = mockData;

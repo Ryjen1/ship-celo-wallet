@@ -17,9 +17,9 @@ function App(): JSX.Element {
         responseTime: 0,
         successRate: 100,
         lastChecked: new Date(),
-        errorCount: 0,
+        errorCount: 0
       },
-      isActive: true,
+      isActive: true
     },
     {
       url: celoAlfajores.rpcUrls.default.http[0],
@@ -29,10 +29,10 @@ function App(): JSX.Element {
         responseTime: 0,
         successRate: 100,
         lastChecked: new Date(),
-        errorCount: 0,
+        errorCount: 0
       },
-      isActive: true,
-    },
+      isActive: true
+    }
   ];
 
   return (

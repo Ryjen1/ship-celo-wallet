@@ -4,7 +4,7 @@ import { useNetworkHealth } from '../useNetworkHealth';
 
 // Mock the useCeloNetwork hook
 vi.mock('../../hooks/useCeloNetwork', () => ({
-  useCeloNetwork: vi.fn(),
+  useCeloNetwork: vi.fn()
 }));
 
 // Mock the network monitoring utilities
@@ -14,7 +14,7 @@ vi.mock('../../utils/networkMonitoring', () => ({
   determineCongestionLevel: vi.fn(),
   fetchBlockData: vi.fn(),
   getGasPrice: vi.fn(),
-  estimateTransactionSuccessRate: vi.fn(),
+  estimateTransactionSuccessRate: vi.fn()
 }));
 
 import { useCeloNetwork } from '../../hooks/useCeloNetwork';
@@ -24,7 +24,7 @@ import {
   determineCongestionLevel,
   fetchBlockData,
   getGasPrice,
-  estimateTransactionSuccessRate,
+  estimateTransactionSuccessRate
 } from '../../utils/networkMonitoring';
 
 describe('useNetworkHealth', () => {
@@ -43,14 +43,14 @@ describe('useNetworkHealth', () => {
           responseTime: 100,
           successRate: 100,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
-      },
+        isActive: true
+      }
     ];
 
     mockUseCeloNetwork = {
-      currentChainId: 42220,
+      currentChainId: 42220
     };
 
     vi.mocked(useCeloNetwork).mockReturnValue(mockUseCeloNetwork);
@@ -61,7 +61,7 @@ describe('useNetworkHealth', () => {
     vi.mocked(determineCongestionLevel).mockReturnValue('low');
     vi.mocked(fetchBlockData).mockResolvedValue([
       { number: BigInt(12345678), timestamp: BigInt(1234567890) },
-      { number: BigInt(12345677), timestamp: BigInt(1234567880) },
+      { number: BigInt(12345677), timestamp: BigInt(1234567880) }
     ]);
     vi.mocked(getGasPrice).mockResolvedValue(BigInt('20000000000'));
     vi.mocked(estimateTransactionSuccessRate).mockResolvedValue(95);
@@ -111,8 +111,8 @@ describe('useNetworkHealth', () => {
       ...mockEndpoints,
       {
         ...mockEndpoints[0],
-        chainId: 44787, // Different chain
-      },
+        chainId: 44787 // Different chain
+      }
     ];
 
     const { result } = renderHook(() => useNetworkHealth({ endpoints: mixedEndpoints }));
@@ -209,9 +209,9 @@ describe('useNetworkHealth', () => {
           responseTime: 100,
           successRate: 100,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
+        isActive: true
       },
       {
         url: 'https://working.rpc.celo.org',
@@ -221,10 +221,10 @@ describe('useNetworkHealth', () => {
           responseTime: 200,
           successRate: 95,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
-      },
+        isActive: true
+      }
     ];
 
     // First endpoint fails, second succeeds
@@ -248,7 +248,7 @@ describe('useNetworkHealth', () => {
       }
       return Promise.resolve([
         { number: BigInt(12345678), timestamp: BigInt(1234567890) },
-        { number: BigInt(12345677), timestamp: BigInt(1234567880) },
+        { number: BigInt(12345677), timestamp: BigInt(1234567880) }
       ]);
     });
 
@@ -279,9 +279,9 @@ describe('useNetworkHealth', () => {
           responseTime: 100,
           successRate: 100,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
+        isActive: true
       },
       {
         url: 'https://failing2.rpc.celo.org',
@@ -291,10 +291,10 @@ describe('useNetworkHealth', () => {
           responseTime: 200,
           successRate: 95,
           lastChecked: new Date(),
-          errorCount: 0,
+          errorCount: 0
         },
-        isActive: true,
-      },
+        isActive: true
+      }
     ];
 
     // All endpoints fail
@@ -341,12 +341,12 @@ describe('useNetworkHealth', () => {
     const failingEndpoint = {
       ...mockEndpoints[0],
       status: 'down',
-      isActive: false,
+      isActive: false
     };
     const workingEndpoint = {
       ...mockEndpoints[1],
       status: 'healthy',
-      isActive: true,
+      isActive: true
     };
 
     const mixedEndpoints = [failingEndpoint, workingEndpoint];
@@ -365,7 +365,7 @@ describe('useNetworkHealth', () => {
     const failingEndpoints = mockEndpoints.map(endpoint => ({
       ...endpoint,
       status: 'down' as const,
-      isActive: false,
+      isActive: false
     }));
 
     const { result } = renderHook(() => useNetworkHealth({ endpoints: failingEndpoints }));
@@ -380,7 +380,7 @@ describe('useNetworkHealth', () => {
   it('should calculate metrics using active endpoints only', async () => {
     const mixedEndpoints = [
       { ...mockEndpoints[0], status: 'down' as const, isActive: false, metrics: { responseTime: 0, successRate: 0, lastChecked: new Date(), errorCount: 1 } },
-      { ...mockEndpoints[1], status: 'healthy' as const, isActive: true, metrics: { responseTime: 100, successRate: 100, lastChecked: new Date(), errorCount: 0 } },
+      { ...mockEndpoints[1], status: 'healthy' as const, isActive: true, metrics: { responseTime: 100, successRate: 100, lastChecked: new Date(), errorCount: 0 } }
     ];
 
     vi.mocked(calculateAverageResponseTime).mockReturnValue(100); // Should use only active endpoint

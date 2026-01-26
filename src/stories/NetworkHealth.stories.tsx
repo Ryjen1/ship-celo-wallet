@@ -9,17 +9,17 @@ const meta: Meta<typeof NetworkHealth> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Displays real-time network health monitoring for Celo blockchain endpoints.',
-      },
-    },
+        component: 'Displays real-time network health monitoring for Celo blockchain endpoints.'
+      }
+    }
   },
   decorators: [
     (Story) => (
       <div style={{ width: '600px', padding: '20px', backgroundColor: '#0f0f0f', borderRadius: '8px' }}>
         <Story />
       </div>
-    ),
-  ],
+    )
+  ]
 };
 
 export default meta;
@@ -34,9 +34,9 @@ const mockEndpoints: RPCEndpoint[] = [
       responseTime: 150,
       successRate: 100,
       lastChecked: new Date(),
-      errorCount: 0,
+      errorCount: 0
     },
-    isActive: true,
+    isActive: true
   },
   {
     url: 'https://backup.rpc.celo.org',
@@ -46,36 +46,36 @@ const mockEndpoints: RPCEndpoint[] = [
       responseTime: 200,
       successRate: 95,
       lastChecked: new Date(),
-      errorCount: 1,
+      errorCount: 1
     },
-    isActive: true,
-  },
+    isActive: true
+  }
 ];
 
 export const Loading: Story = {
   args: {
-    endpoints: mockEndpoints,
+    endpoints: mockEndpoints
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the loading state while network health data is being fetched.',
-      },
-    },
-  },
+        story: 'Shows the loading state while network health data is being fetched.'
+      }
+    }
+  }
 };
 
 export const Healthy: Story = {
   args: {
-    endpoints: mockEndpoints,
+    endpoints: mockEndpoints
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the component when the network is healthy with all endpoints working optimally.',
-      },
-    },
-  },
+        story: 'Shows the component when the network is healthy with all endpoints working optimally.'
+      }
+    }
+  }
 };
 
 export const Degraded: Story = {
@@ -90,32 +90,32 @@ export const Degraded: Story = {
           responseTime: 3000,
           successRate: 85,
           lastChecked: new Date(),
-          errorCount: 2,
+          errorCount: 2
         },
-        isActive: false,
-      },
-    ],
+        isActive: false
+      }
+    ]
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the component when the network is degraded with some endpoints experiencing issues.',
-      },
-    },
-  },
+        story: 'Shows the component when the network is degraded with some endpoints experiencing issues.'
+      }
+    }
+  }
 };
 
 export const Error: Story = {
   args: {
-    endpoints: mockEndpoints,
+    endpoints: mockEndpoints
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the component when there is an error fetching network health data.',
-      },
-    },
-  },
+        story: 'Shows the component when there is an error fetching network health data.'
+      }
+    }
+  }
 };
 
 export const Down: Story = {
@@ -123,14 +123,14 @@ export const Down: Story = {
     endpoints: mockEndpoints.map(endpoint => ({
       ...endpoint,
       status: 'down' as const,
-      isActive: false,
-    })),
+      isActive: false
+    }))
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the component when the network is completely down with all endpoints failing.',
-      },
-    },
-  },
+        story: 'Shows the component when the network is completely down with all endpoints failing.'
+      }
+    }
+  }
 };

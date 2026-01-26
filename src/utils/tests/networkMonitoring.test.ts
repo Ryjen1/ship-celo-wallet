@@ -8,33 +8,36 @@ import {
   estimateTransactionSuccessRate,
   checkMultipleEndpoints,
   calculateAverageResponseTime,
-  determineCongestionLevel,
+  determineCongestionLevel
 } from '../networkMonitoring';
 import type { RPCEndpoint } from '../../types/network';
 
 // Mock viem
 vi.mock('viem', () => ({
   createPublicClient: vi.fn(),
+  http: vi.fn()
 }));
 
 // Mock viem chains
 vi.mock('viem/chains', () => ({
   celo: { id: 42220, name: 'Celo' },
   celoAlfajores: { id: 44787, name: 'Celo Alfajores' },
-  celoBaklava: { id: 62320, name: 'Celo Baklava' },
+  celoBaklava: { id: 62320, name: 'Celo Baklava' }
 }));
 
 describe('Network Monitoring Utils', () => {
   let mockClient: any;
   let mockEndpoint: RPCEndpoint;
+  let dateNowSpy: vi.SpyInstance;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    dateNowSpy = vi.spyOn(Date, 'now');
 
     mockClient = {
       getBlockNumber: vi.fn(),
       getBlock: vi.fn(),
-      getGasPrice: vi.fn(),
+      getGasPrice: vi.fn()
     };
 
     vi.mocked(createPublicClient).mockReturnValue(mockClient);
@@ -47,19 +50,25 @@ describe('Network Monitoring Utils', () => {
         responseTime: 100,
         successRate: 100,
         lastChecked: new Date(),
-        errorCount: 0,
+        errorCount: 0
       },
-      isActive: true,
+      isActive: true
     };
+  });
+
+  afterEach(() => {
+    dateNowSpy.mockRestore();
   });
 
   describe('checkRPCEndpointHealth', () => {
     it('should update endpoint metrics on successful health check', async () => {
+      dateNowSpy.mockReturnValueOnce(1000).mockReturnValueOnce(1010);
+
       mockClient.getBlockNumber.mockResolvedValue(BigInt(12345678));
 
       await checkRPCEndpointHealth(mockEndpoint);
 
-      expect(mockEndpoint.metrics.responseTime).toBeGreaterThan(0);
+      expect(mockEndpoint.metrics.responseTime).toBe(10);
       expect(mockEndpoint.metrics.successRate).toBe(100);
       expect(mockEndpoint.metrics.errorCount).toBe(0);
       expect(mockEndpoint.status).toBe('healthy');
@@ -67,11 +76,13 @@ describe('Network Monitoring Utils', () => {
     });
 
     it('should update endpoint metrics on failed health check', async () => {
+      dateNowSpy.mockReturnValueOnce(1000).mockReturnValueOnce(1010);
+
       mockClient.getBlockNumber.mockRejectedValue(new Error('Network error'));
 
       await checkRPCEndpointHealth(mockEndpoint);
 
-      expect(mockEndpoint.metrics.responseTime).toBeGreaterThan(0);
+      expect(mockEndpoint.metrics.responseTime).toBe(10);
       expect(mockEndpoint.metrics.successRate).toBe(0);
       expect(mockEndpoint.metrics.errorCount).toBe(1);
       expect(mockEndpoint.status).toBe('down');
@@ -81,21 +92,28 @@ describe('Network Monitoring Utils', () => {
 
   describe('measureResponseTime', () => {
     it('should return response time for successful call', async () => {
+      dateNowSpy.mockReturnValueOnce(1000).mockReturnValueOnce(1010);
+
       mockClient.getBlockNumber.mockResolvedValue(BigInt(12345678));
 
       const responseTime = await measureResponseTime(mockEndpoint);
 
-      expect(responseTime).toBeGreaterThan(0);
+      expect(responseTime).toBe(10);
       expect(typeof responseTime).toBe('number');
     });
 
     it('should return response time for failed call', async () => {
+
+      dateNowSpy.mockReturnValueOnce(1000).mockReturnValueOnce(1010);
+
       mockClient.getBlockNumber.mockRejectedValue(new Error('Network error'));
 
       const responseTime = await measureResponseTime(mockEndpoint);
 
-      expect(responseTime).toBeGreaterThan(0);
+      expect(responseTime).toBe(10);
+
       expect(typeof responseTime).toBe('number');
+
     });
   });
 
@@ -138,7 +156,7 @@ describe('Network Monitoring Utils', () => {
   describe('estimateTransactionSuccessRate', () => {
     it('should estimate success rate based on transaction count', async () => {
       const mockBlock = {
-        transactions: Array(10).fill({}), // 10 transactions
+        transactions: Array(10).fill({}) // 10 transactions
       };
       mockClient.getBlock.mockResolvedValue(mockBlock);
 
@@ -170,7 +188,7 @@ describe('Network Monitoring Utils', () => {
       const metrics = [
         { responseTime: 100, successRate: 100, lastChecked: new Date(), errorCount: 0 },
         { responseTime: 200, successRate: 100, lastChecked: new Date(), errorCount: 0 },
-        { responseTime: 300, successRate: 100, lastChecked: new Date(), errorCount: 0 },
+        { responseTime: 300, successRate: 100, lastChecked: new Date(), errorCount: 0 }
       ];
 
       const average = calculateAverageResponseTime(metrics);
@@ -220,6 +238,125 @@ describe('Network Monitoring Utils', () => {
       const level = determineCongestionLevel(gasPrice, responseTime);
 
       expect(level).toBe('low');
+    });
+  });
+
+  describe('checkMultipleEndpoints fallback behavior', () => {
+    it('should handle mixed success/failure scenarios', async () => {
+      let callCount = 0;
+
+      mockClient.getBlockNumber.mockImplementation(() => {
+
+        callCount++;
+
+        if (callCount === 1) {return Promise.resolve(BigInt(12345678));}
+
+        return Promise.reject(new Error('Connection failed'));
+
+      });
+
+      const endpoint1 = { ...mockEndpoint, url: 'https://endpoint1.com' };
+
+      const endpoint2 = { ...mockEndpoint, url: 'https://endpoint2.com' };
+
+      await checkMultipleEndpoints([endpoint1, endpoint2]);
+
+      expect(endpoint1.status).toBe('healthy');
+
+      expect(endpoint1.isActive).toBe(true);
+
+      expect(endpoint2.status).toBe('down');
+
+      expect(endpoint2.isActive).toBe(false);
+
+    });
+
+    it('should continue checking all endpoints even if some fail', async () => {
+      const endpoints = [
+        { ...mockEndpoint, url: 'https://endpoint1.com' },
+        { ...mockEndpoint, url: 'https://endpoint2.com' },
+        { ...mockEndpoint, url: 'https://endpoint3.com' }
+      ];
+
+      let callCount = 0;
+
+      mockClient.getBlockNumber.mockImplementation(() => {
+
+        callCount++;
+
+        if (callCount === 2) {return Promise.resolve(BigInt(12345678));}
+
+        return Promise.reject(new Error('Fail'));
+
+      });
+
+      await checkMultipleEndpoints(endpoints);
+
+      expect(endpoints[0].status).toBe('down');
+      expect(endpoints[0].isActive).toBe(false);
+      expect(endpoints[1].status).toBe('healthy');
+      expect(endpoints[1].isActive).toBe(true);
+      expect(endpoints[2].status).toBe('down');
+      expect(endpoints[2].isActive).toBe(false);
+    });
+
+    it('should update error counts appropriately', async () => {
+      let callCount = 0;
+
+      mockClient.getBlockNumber.mockImplementation(() => {
+
+        callCount++;
+
+        if (callCount === 1) {return Promise.reject(new Error('Fail'));}
+
+        return Promise.resolve(BigInt(12345678));
+
+      });
+
+      const endpoint = { ...mockEndpoint, metrics: { ...mockEndpoint.metrics, errorCount: 0 } };
+
+      await checkRPCEndpointHealth(endpoint);
+
+      expect(endpoint.metrics.errorCount).toBe(1);
+
+      await checkRPCEndpointHealth(endpoint);
+
+      expect(endpoint.metrics.errorCount).toBe(0); // Reset on success
+
+    });
+
+    it('should maintain endpoint status consistency', async () => {
+
+      let callCount = 0;
+
+      mockClient.getBlockNumber.mockImplementation(() => {
+
+        callCount++;
+
+        if (callCount === 1) {return Promise.reject(new Error('Fail'));}
+
+        return Promise.resolve(BigInt(12345678));
+
+      });
+
+      const endpoint = { ...mockEndpoint };
+
+      await checkRPCEndpointHealth(endpoint);
+
+      expect(endpoint.status).toBe('down');
+
+      expect(endpoint.isActive).toBe(false);
+
+      expect(endpoint.metrics.successRate).toBe(0);
+
+      await checkRPCEndpointHealth(endpoint);
+
+      expect(endpoint.status).toBe('healthy');
+
+      expect(endpoint.isActive).toBe(true);
+
+      expect(endpoint.metrics.successRate).toBe(100);
+
     });
   });
 });
