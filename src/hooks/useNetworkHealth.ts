@@ -18,6 +18,7 @@ import type {
 interface UseNetworkHealthOptions {
   interval?: number; // in milliseconds, default 30000
   endpoints: RPCEndpoint[];
+  cacheTimeout?: number; // in milliseconds, default 10000 (10 seconds)
 }
 
 export function useNetworkHealth(options: UseNetworkHealthOptions) {
@@ -25,12 +26,20 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
   const [data, setData] = useState<NetworkHealthData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
   const interval = options.interval || 30000;
+  const cacheTimeout = options.cacheTimeout || 10000; // 10 seconds default
   const endpoints = options.endpoints.filter((e) => e.chainId === currentChainId);
 
   const fetchHealth = useCallback(async () => {
     if (endpoints.length === 0) return;
+
+    // Check if we have recent data and can skip fetching
+    const now = Date.now();
+    if (data && (now - lastFetchTime) < cacheTimeout) {
+      return; // Use cached data
+    }
 
     setLoading(true);
     setError(null);
@@ -44,27 +53,33 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
         endpoints.map((e) => e.metrics)
       );
 
-      // Use the first active endpoint for additional metrics
-      const activeEndpoint = endpoints.find((e) => e.isActive);
+      // Use the first active endpoint for additional metrics, with fallback switching
+      const activeEndpoints = endpoints.filter((e) => e.isActive);
       let gasPrice = 0n;
       let transactionSuccessRate = 0;
       let blockProductionTime = 0;
       let lastBlockNumber = 0;
 
-      if (activeEndpoint) {
-        gasPrice = await getGasPrice(activeEndpoint);
-        transactionSuccessRate = await estimateTransactionSuccessRate(activeEndpoint);
+      for (const endpoint of activeEndpoints) {
+        try {
+          gasPrice = await getGasPrice(endpoint);
+          transactionSuccessRate = await estimateTransactionSuccessRate(endpoint);
 
-        const blocks = await fetchBlockData(activeEndpoint, 10);
-        if (blocks.length > 1) {
-          // Calculate average block production time in seconds
-          const timeDiffs = blocks
-            .slice(1)
-            .map((block, i) => Number(blocks[i].timestamp - block.timestamp));
-          blockProductionTime =
-            timeDiffs.reduce((sum, diff) => sum + diff, 0) / timeDiffs.length / 1000;
+          const blocks = await fetchBlockData(endpoint, 10);
+          if (blocks.length > 1) {
+            // Calculate average block production time in seconds
+            const timeDiffs = blocks
+              .slice(1)
+              .map((block, i) => Number(blocks[i].timestamp - block.timestamp));
+            blockProductionTime =
+              timeDiffs.reduce((sum, diff) => sum + diff, 0) / timeDiffs.length / 1000;
+          }
+          lastBlockNumber = Number(blocks[0]?.number || 0);
+          break; // Successfully got data, stop trying other endpoints
+        } catch (error) {
+          console.warn(`Failed to fetch data from ${endpoint.url}, trying next endpoint:`, error);
+          continue; // Try next endpoint
         }
-        lastBlockNumber = Number(blocks[0]?.number || 0);
       }
 
       // Determine congestion level
@@ -101,12 +116,13 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
       };
 
       setData(healthData);
+      setLastFetchTime(now);
     } catch (err) {
       setError(err as Error);
     } finally {
       setLoading(false);
     }
-  }, [endpoints, currentChainId]);
+  }, [endpoints, currentChainId, data, lastFetchTime, cacheTimeout]);
 
   useEffect(() => {
     fetchHealth();
