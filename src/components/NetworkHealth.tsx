@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNetworkHealth } from '../hooks/useNetworkHealth';
+import { ErrorRecovery } from './ErrorRecovery';
 import type { RPCEndpoint } from '../types/network';
 
 interface NetworkHealthProps {
