@@ -26,6 +26,8 @@ interface ErrorRecoveryProps {
   onSwitchRpc?: (endpoint: RPCEndpoint) => void;
   /** Callback when recovery is successful */
   onRecovered?: () => void;
+  /** Whether to attempt automatic recovery */
+  autoRecover?: boolean;
 }
 
 /**
@@ -43,7 +45,8 @@ export function ErrorRecovery({
   availableEndpoints = [],
   onRetry,
   onSwitchRpc,
-  onRecovered
+  onRecovered,
+  autoRecover = true
 }: ErrorRecoveryProps) {
   const [message, setMessage] = useState<UserMessage | null>(null);
   const [loading, setLoading] = useState(false);
@@ -58,11 +61,11 @@ export function ErrorRecovery({
     setAttempts([]);
 
     // Generate user message
-    const userMessage = generateUserMessage(error, errorRecovery.classifyError(error, context));
+    const userMessage = generateUserMessage(error, classifyError(error, context));
     setMessage(userMessage);
 
     // Attempt automatic recovery
-    if (userMessage.actions.some(action => action.automatic)) {
+    if (autoRecover && userMessage?.actions?.some(action => action.automatic)) {
       handleAutomaticRecovery(userMessage);
     }
   }, [error, context]);
@@ -97,7 +100,7 @@ export function ErrorRecovery({
     const attempt: RecoveryAttempt = {
       timestamp: new Date(),
       error,
-      category: errorRecovery.classifyError(error, context) as ErrorCategory,
+      category: classifyError(error, context),
       action,
       success: false
     };
@@ -110,7 +113,7 @@ export function ErrorRecovery({
           break;
         case 'switch_rpc':
           if (availableEndpoints.length > 0) {
-            const newEndpoint = errorRecovery.switchRpcEndpoint(availableEndpoints[0], availableEndpoints);
+            const newEndpoint = switchRpcEndpoint(availableEndpoints[0], availableEndpoints);
             if (newEndpoint) {
               onSwitchRpc?.(newEndpoint);
               attempt.success = true;
