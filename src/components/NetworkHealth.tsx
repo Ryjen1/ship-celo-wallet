@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNetworkHealth } from '../hooks/useNetworkHealth';
 import type { RPCEndpoint } from '../types/network';
 
@@ -38,6 +39,13 @@ function formatErrorMessage(error: Error): string {
 export function NetworkHealth({ endpoints }: NetworkHealthProps) {
   const { data, loading, error } = useNetworkHealth({ endpoints, interval: 30000, cacheTimeout: 15000 });
 
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   if (loading) {
     return (
       <div className="wallet-card">
@@ -73,19 +81,19 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return '#22c55e';
-      case 'degraded': return '#f59e0b';
-      case 'down': return '#ef4444';
-      default: return '#6b7280';
+    case 'healthy': return '#22c55e';
+    case 'degraded': return '#f59e0b';
+    case 'down': return '#ef4444';
+    default: return '#6b7280';
     }
   };
 
   const getCongestionWidth = (level: string) => {
     switch (level) {
-      case 'low': return '33%';
-      case 'medium': return '66%';
-      case 'high': return '100%';
-      default: return '0%';
+    case 'low': return '33%';
+    case 'medium': return '66%';
+    case 'high': return '100%';
+    default: return '0%';
     }
   };
 
@@ -101,7 +109,7 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
               width: '12px',
               height: '12px',
               borderRadius: '50%',
-              backgroundColor: getStatusColor(status),
+              backgroundColor: getStatusColor(status)
             }}
           ></div>
           <span>Network Status: {status.charAt(0).toUpperCase() + status.slice(1)}</span>
@@ -118,7 +126,7 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
               height: '100%',
               backgroundColor: congestionLevel === 'high' ? '#ef4444' : congestionLevel === 'medium' ? '#f59e0b' : '#22c55e',
               borderRadius: '4px',
-              transition: 'width 0.3s ease',
+              transition: 'width 0.3s ease'
             }}
           ></div>
         </div>
@@ -163,7 +171,7 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  backgroundColor: getStatusColor(endpoint.status),
+                  backgroundColor: getStatusColor(endpoint.status)
                 }}
               ></div>
               <span style={{ fontSize: '0.875rem' }}>{endpoint.url} - {endpoint.status}</span>
@@ -176,7 +184,7 @@ export function NetworkHealth({ endpoints }: NetworkHealthProps) {
       <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginTop: '1rem' }}>
         <div>Last updated: {lastUpdated.toLocaleString()}</div>
         <div style={{ marginTop: '0.25rem' }}>
-          Data cached for {Math.round((Date.now() - lastUpdated.getTime()) / 1000)}s (refreshes every 30s)
+          Data cached for {Math.round((currentTime - lastUpdated.getTime()) / 1000)}s (refreshes every 30s)
         </div>
       </div>
     </div>
