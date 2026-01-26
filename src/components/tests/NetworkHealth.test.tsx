@@ -54,7 +54,7 @@ describe('NetworkHealth', () => {
 
     render(<NetworkHealth endpoints={mockEndpoints} />);
 
-    expect(screen.getByText('Error loading network health: Test error')).toBeInTheDocument();
+    expect(screen.getByText('An unexpected error occurred while monitoring network health. Please try again later or contact support if the issue persists.')).toBeInTheDocument();
   });
 
   it('should render empty state when no data', () => {
@@ -164,7 +164,7 @@ describe('NetworkHealth', () => {
     expect(screen.getByText('https://rpc.celo.org - down')).toBeInTheDocument();
   });
 
-  it('should display last updated timestamp', () => {
+  it('should display last updated timestamp and cache info', () => {
     const lastUpdated = new Date('2023-01-01T12:00:00Z');
     const mockData: NetworkHealthData = {
       chainId: 42220,
@@ -188,6 +188,7 @@ describe('NetworkHealth', () => {
     render(<NetworkHealth endpoints={mockEndpoints} />);
 
     expect(screen.getByText(`Last updated: ${lastUpdated.toLocaleString()}`)).toBeInTheDocument();
+    expect(screen.getByText(/Data cached for \d+s \(refreshes every 30s\)/)).toBeInTheDocument();
   });
 
   it('should render congestion bar width correctly', () => {
@@ -214,5 +215,53 @@ describe('NetworkHealth', () => {
 
     const congestionBar = screen.getByRole('progressbar'); // Assuming the div with width is treated as progressbar
     expect(congestionBar).toHaveStyle({ width: '66%' });
+  });
+
+  it('should display user-friendly error messages', () => {
+    mockUseNetworkHealth.error = new Error('network connection failed');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('Network connection error. Please check your internet connection and try again.')).toBeInTheDocument();
+  });
+
+  it('should display timeout error message', () => {
+    mockUseNetworkHealth.error = new Error('Request timeout occurred');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('Request timed out. The network may be experiencing high congestion. Try refreshing or switching networks.')).toBeInTheDocument();
+  });
+
+  it('should display RPC endpoint error message', () => {
+    mockUseNetworkHealth.error = new Error('All RPC endpoints are down');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('RPC endpoint error. Some network endpoints may be temporarily unavailable. The system will automatically try alternative endpoints.')).toBeInTheDocument();
+  });
+
+  it('should display gas price error message', () => {
+    mockUseNetworkHealth.error = new Error('Failed to get gas price');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('Gas price retrieval failed. Transaction cost estimation may be unavailable.')).toBeInTheDocument();
+  });
+
+  it('should display fetch error message', () => {
+    mockUseNetworkHealth.error = new Error('Failed to fetch data');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('Data fetch error. Network monitoring data could not be retrieved. Please check your connection.')).toBeInTheDocument();
+  });
+
+  it('should display generic error message for unknown errors', () => {
+    mockUseNetworkHealth.error = new Error('Some unexpected error');
+
+    render(<NetworkHealth endpoints={mockEndpoints} />);
+
+    expect(screen.getByText('An unexpected error occurred while monitoring network health. Please try again later or contact support if the issue persists.')).toBeInTheDocument();
   });
 });
