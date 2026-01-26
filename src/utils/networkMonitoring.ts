@@ -3,15 +3,13 @@ import { celo, celoAlfajores, celoBaklava } from 'viem/chains';
 import type {
   RPCEndpoint,
   RPCHealthMetrics,
-  NetworkHealthMetrics,
-  NetworkCongestionLevel,
-  NetworkStatus,
+  NetworkCongestionLevel
 } from '../types/network';
 
 const chainMap = {
   42220: celo,
   44787: celoAlfajores,
-  62320: celoBaklava,
+  62320: celoBaklava
 } as const;
 
 /**
@@ -19,10 +17,12 @@ const chainMap = {
  */
 function createClient(endpoint: RPCEndpoint): PublicClient {
   const chain = chainMap[endpoint.chainId as keyof typeof chainMap];
-  if (!chain) throw new Error(`Unsupported chain ID: ${endpoint.chainId}`);
+  if (!chain) {
+    throw new Error(`Unsupported chain ID: ${endpoint.chainId}`);
+  }
   return createPublicClient({
     chain,
-    transport: http(endpoint.url),
+    transport: http(endpoint.url)
   });
 }
 
@@ -42,7 +42,7 @@ export async function checkRPCEndpointHealth(endpoint: RPCEndpoint): Promise<voi
     endpoint.metrics.errorCount = 0;
     endpoint.status = 'healthy';
     endpoint.isActive = true;
-  } catch (error) {
+  } catch {
     const responseTime = Date.now() - startTime;
     endpoint.metrics.responseTime = responseTime;
     endpoint.metrics.successRate = 0;
@@ -70,7 +70,7 @@ export async function measureResponseTime(endpoint: RPCEndpoint): Promise<number
 /**
  * Fetches block data for timing calculations, including latest block and previous blocks.
  */
-export async function fetchBlockData(endpoint: RPCEndpoint, blockCount: number = 10): Promise<any[]> {
+export async function fetchBlockData(endpoint: RPCEndpoint, blockCount = 10): Promise<any[]> {
   try {
     const client = createClient(endpoint);
     const latestBlockNumber = await client.getBlockNumber();
@@ -80,8 +80,8 @@ export async function fetchBlockData(endpoint: RPCEndpoint, blockCount: number =
       blocks.push(block);
     }
     return blocks;
-  } catch (error) {
-    throw new Error(`Failed to fetch block data: ${error}`);
+  } catch {
+    throw new Error('Failed to fetch block data');
   }
 }
 
@@ -92,8 +92,8 @@ export async function getGasPrice(endpoint: RPCEndpoint): Promise<bigint> {
   try {
     const client = createClient(endpoint);
     return await client.getGasPrice();
-  } catch (error) {
-    throw new Error(`Failed to get gas price: ${error}`);
+  } catch {
+    throw new Error('Failed to get gas price');
   }
 }
 
@@ -108,13 +108,21 @@ export async function estimateTransactionSuccessRate(endpoint: RPCEndpoint): Pro
     const txCount = latestBlock.transactions.length;
     // Assume success rate based on tx count; this is placeholder logic
     return Math.min(100, txCount * 10); // Arbitrary calculation
-  } catch (error) {
-    throw new Error(`Failed to estimate success rate: ${error}`);
+  } catch {
+    throw new Error('Failed to estimate success rate');
   }
 }
 
 /**
- * Checks multiple RPC endpoints and updates their statuses.
+ * Checks the health of multiple RPC endpoints concurrently.
+ *
+ * This function performs health checks on all provided endpoints in parallel,
+ * updating each endpoint's status, metrics, and availability. It's designed
+ * to efficiently monitor network health across multiple RPC providers.
+ *
+ * @param endpoints - Array of RPC endpoints to check
+ * @returns Promise that resolves when all health checks are complete
+ * @throws Will not throw; individual endpoint failures are handled gracefully
  */
 export async function checkMultipleEndpoints(endpoints: RPCEndpoint[]): Promise<void> {
   await Promise.all(endpoints.map(checkRPCEndpointHealth));
@@ -124,7 +132,9 @@ export async function checkMultipleEndpoints(endpoints: RPCEndpoint[]): Promise<
  * Calculates the average response time from a list of metrics.
  */
 export function calculateAverageResponseTime(metrics: RPCHealthMetrics[]): number {
-  if (metrics.length === 0) return 0;
+  if (metrics.length === 0) {
+    return 0;
+  }
   const total = metrics.reduce((sum, m) => sum + m.responseTime, 0);
   return total / metrics.length;
 }
@@ -137,7 +147,11 @@ export function determineCongestionLevel(
   averageResponseTime: number
 ): NetworkCongestionLevel {
   const gasPriceGwei = Number(gasPrice) / 1e9;
-  if (gasPriceGwei > 100 || averageResponseTime > 5000) return 'high';
-  if (gasPriceGwei > 50 || averageResponseTime > 2000) return 'medium';
+  if (gasPriceGwei > 100 || averageResponseTime > 5000) {
+    return 'high';
+  }
+  if (gasPriceGwei > 50 || averageResponseTime > 2000) {
+    return 'medium';
+  }
   return 'low';
 }

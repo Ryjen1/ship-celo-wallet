@@ -3,9 +3,15 @@ import { useNetworkHealth } from '../hooks/useNetworkHealth';
 import type { RPCEndpoint } from '../types/network';
 
 interface NetworkHealthProps {
+  /** Array of RPC endpoints to monitor for network health */
   endpoints: RPCEndpoint[];
 }
 
+/**
+ * Formats error messages into user-friendly descriptions based on error content.
+ * @param error - The error object to format
+ * @returns A user-friendly error message string
+ */
 function formatErrorMessage(error: Error): string {
   const message = error.message.toLowerCase();
 
@@ -36,6 +42,29 @@ function formatErrorMessage(error: Error): string {
   return 'An unexpected error occurred while monitoring network health. Please try again later or contact support if the issue persists.';
 }
 
+/**
+ * NetworkHealth component displays real-time Celo network health information.
+ *
+ * This component monitors RPC endpoints, displays network status, congestion levels,
+ * response times, and other key metrics. It provides visual indicators for network
+ * health and shows user-friendly error messages when issues occur.
+ *
+ * Features:
+ * - Real-time network status monitoring
+ * - Congestion level visualization
+ * - RPC endpoint health checks
+ * - Automatic error handling with descriptive messages
+ * - Cached data to reduce API calls
+ *
+ * @param props - Component props
+ * @param props.endpoints - Array of RPC endpoints to monitor
+ * @returns JSX element displaying network health dashboard
+ *
+ * @example
+ * ```tsx
+ * <NetworkHealth endpoints={celoEndpoints} />
+ * ```
+ */
 export function NetworkHealth({ endpoints }: NetworkHealthProps) {
   const { data, loading, error } = useNetworkHealth({ endpoints, interval: 30000, cacheTimeout: 15000 });
 

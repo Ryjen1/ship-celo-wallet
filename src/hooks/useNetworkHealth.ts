@@ -6,21 +6,43 @@ import {
   determineCongestionLevel,
   fetchBlockData,
   getGasPrice,
-  estimateTransactionSuccessRate,
+  estimateTransactionSuccessRate
 } from '../utils/networkMonitoring';
 import type {
   NetworkHealthData,
   RPCEndpoint,
   NetworkHealthMetrics,
-  NetworkStatus,
+  NetworkStatus
 } from '../types/network';
 
 interface UseNetworkHealthOptions {
-  interval?: number; // in milliseconds, default 30000
+  /** Polling interval in milliseconds, default 30000 (30 seconds) */
+  interval?: number;
+  /** Array of RPC endpoints to monitor */
   endpoints: RPCEndpoint[];
-  cacheTimeout?: number; // in milliseconds, default 10000 (10 seconds)
+  /** Cache timeout in milliseconds, default 10000 (10 seconds) */
+  cacheTimeout?: number;
 }
 
+/**
+ * Custom hook for monitoring Celo network health.
+ *
+ * This hook periodically checks the health of RPC endpoints for the current Celo network,
+ * calculating metrics like response times, congestion levels, and overall network status.
+ * It uses caching to avoid unnecessary requests and provides real-time updates.
+ *
+ * @param options - Configuration options for network health monitoring
+ * @returns Object containing health data, loading state, and error information
+ *
+ * @example
+ * ```tsx
+ * const { data, loading, error } = useNetworkHealth({
+ *   endpoints: celoEndpoints,
+ *   interval: 30000,
+ *   cacheTimeout: 15000
+ * });
+ * ```
+ */
 export function useNetworkHealth(options: UseNetworkHealthOptions) {
   const { currentChainId } = useCeloNetwork();
   const [data, setData] = useState<NetworkHealthData | null>(null);
@@ -33,7 +55,7 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
   const endpoints = options.endpoints.filter((e) => e.chainId === currentChainId);
 
   const fetchHealth = useCallback(async () => {
-    if (endpoints.length === 0) return;
+    if (endpoints.length === 0) {return;}
 
     // Check if we have recent data and can skip fetching
     const now = Date.now();
@@ -103,7 +125,7 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
         gasPriceTrend: 'stable', // Placeholder; could be calculated based on historical data
         connectedPeerCount: 0, // Placeholder; requires additional implementation
         lastBlockNumber,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
 
       const healthData: NetworkHealthData = {
@@ -112,7 +134,7 @@ export function useNetworkHealth(options: UseNetworkHealthOptions) {
         congestionLevel,
         metrics,
         rpcEndpoints: endpoints,
-        lastUpdated: new Date(),
+        lastUpdated: new Date()
       };
 
       setData(healthData);
